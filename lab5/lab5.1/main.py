@@ -1,75 +1,102 @@
-from Matrix import Matrix
-from Vector import Vector
-import numpy as np
+from typing import List
 
-def generate_matrix_and_vectors(matrix_vectors, size, left_border, right_border, diagonal_value):
-    matrix = []
-    vectors = []
-    trues = []
-    diagonal_demos = []
+def jacobi_iteration(A: List[List[float]], b: List[float], x: List[float]) -> List[float]:
+    n = len(A)
+    x_new = [0.0] * n
+    for i in range(n):
+        sum_val = sum(A[i][j] * x[j] for j in range(n) if j != i)
+        x_new[i] = (b[i] - sum_val) / A[i][i]
+    return x_new
 
-    diagonal_values = [i * (diagonal_value[1] - diagonal_value[0]) / (matrix_vectors - 1) + diagonal_value[0] for i in range(matrix_vectors)]
+def jacobi(A: List[List[float]], b: List[float], x0: List[float], tol: float, max_iter: int) -> List[float]:
+    n = len(A)
+    x = x0.copy()
+    iterate = 0
 
-    for diagonal_demo in diagonal_values:
-        matrix1 = Matrix.fill_random(size, left_border, right_border, diagonal_demo)
-        vector1 = Vector.fill_random(size)
+    while iterate < max_iter:
+        x_new = jacobi_iteration(A, b, x)
 
-        mul_vector = matrix1 * vector1
+        if max(abs(x_new[i] - x[i]) for i in range(n)) < tol:
+            return x_new
 
-        matrix.append(matrix1)
-        vectors.append(mul_vector)
-        trues.append(vector1)
-        diagonal_demos.append(diagonal_demo)
+        x = x_new
+        iterate += 1
+        print(f'Вид матрицы на итерации {iterate}: ')
+        print(x)
 
-    return matrix, vectors, trues, diagonal_demos
+    return x
 
-def get_input():
+def gaussian_elimination(A: List[List[float]], b: List[float]) -> List[float]:
+    n = len(A)
+    for i in range(n):
+        max_row = i
+        for j in range(i + 1, n):
+            if abs(A[j][i]) > abs(A[max_row][i]):
+                max_row = j
+        A[i], A[max_row] = A[max_row], A[i]
+        b[i], b[max_row] = b[max_row], b[i]
 
-    matrix_vectors = int(input("Введите количество матриц и векторов: "))
-    size = int(input("Введите размерность: "))
-    left_border = int(input("Введите левую границу для значений в матрице: "))
-    right_border = int(input("Введите правую границу для значений в матрице: "))
-    left_border_diagonal = int(input("Введите левую границу для значения диагонали: "))
-    right_border_diagonal = int(input("Введите правую границу для значения диагонали: "))
+        for j in range(i + 1, n):
+            factor = A[j][i] / A[i][i]
+            for k in range(i, n):
+                A[j][k] -= factor * A[i][k]
+            b[j] -= factor * b[i]
 
-    return matrix_vectors, size, left_border, right_border, left_border_diagonal, right_border_diagonal
+    x = [0.0] * n
+    for i in range(n - 1, -1, -1):
+        x[i] = b[i] / A[i][i]
+        for j in range(i):
+            b[j] -= A[j][i] * x[i]
 
-def Jakobi(A, b, x0, tol = 1e-10, max_iter = 1000):
-    # n = vector.size()
-    # A = np.array(matrix.grid, dtype=float)
-    # b = np.array(vector.value, dtype=float)
-    n = len(vector)
-
-    x = np.copy(x0)
-
-    for k in range(max_iter):
-        x_old = np.copy(x)
-        for i in range(n):
-            sigma = np.dot(A[i, :i], x_old[:i]) + np.dot(A[i, i+1:], x_old[i+1:])
-            x[i] = (b[i] - sigma) / A[i, i]
-
-            if np.linalg.norm(x - x_old, ord=np.inf) < tol:
-                return x
-
-    raise ValueError("Метод не сошелся за указанное количество итераций")
-
-
+    return x
 
 if __name__ == "__main__":
-    # m1 = Matrix.input(3)
+    # Пробные входные данные
+    A = [
+        [4, -1, 0, 0],
+        [-1, 4, -1, 0],
+        [0, -1, 4, -1],
+        [0, 0, -1, 3]
+    ]
+    b = [15, 10, 10, 10]
+    x0 = [0, 0, 0, 0]
 
-    # matrix = Matrix.fill_random(4, -5, 5, 1)
-    # vector = Vector.fill_random(4)
-    # x0 = np.zeros_like(vector)
+    # Решение методом Якоби
+    sol_jac = jacobi(A, b, x0, 1e-6, 200)
 
-    matrix = np.array([[4, -1, 0, 0],
-              [-1, 4, -1, 0],
-              [0, -1, 4, -1],
-              [0, 0, -1, 4]], dtype=float)
+    # Решение методом Гаусса
+    sol_gauss = gaussian_elimination(A, b)
 
-    vector = np.array([15, 10, 10, 10], dtype=float)
+    print('Ответ используя метод Якоби: ')
+    print(sol_jac)
+    print('Ответ используя метод Гаусса: ')
+    print(sol_gauss)
 
-    x0 = np.zeros_like(vector)
+    # Проверка того, что результаты методов отличаются меньше чем на эпсилон
+    print("Сравнение методов:", all(abs(sol_jac[i] - sol_gauss[i]) < 1e-6 for i in range(len(sol_jac))))
 
-    solution = Jakobi(matrix, vector, x0)
-    print(solution)
+    # Проверка на диагональное преобладание
+    diagonal_dom = all(
+        abs(A[i][i]) > sum(
+            abs(A[i][j]) for j in range(len(A[i])) if j != i
+        ) for i in range(len(A))
+    )
+    print("Диагональное преобладание:", diagonal_dom)
+
+    P = [
+        [-A[i][j] / A[i][i] if i != j else 0 for j in range(len(A[i]))]
+        for i in range(len(A))
+    ]
+
+    norm_P = max(
+        sum(
+            abs(P[i][j]) for j in range(len(P[i]))
+        ) for i in range(len(P))
+    )
+
+    q = 0.9
+
+    if norm_P <= q:
+        print("Выполнение условия:", True)
+    else:
+        print("Выполнение условия:", False)
