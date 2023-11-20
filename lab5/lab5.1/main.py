@@ -62,7 +62,7 @@ if __name__ == "__main__":
     x0 = [0, 0, 0, 0]
 
     # Решение методом Якоби
-    sol_jac = jacobi(A, b, x0, 1e-6, 200)
+    sol_jac = jacobi(A, b, x0, 1e-6, 1000)
 
     # Решение методом Гаусса
     sol_gauss = gaussian_elimination(A, b)
