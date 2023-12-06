@@ -24,6 +24,38 @@ def graphic(time_common, time_strassen, time_parallel, time_mulproc):
     plt.show()
 
 
+def run_strassen(time_strassen, matrix_A, matrix_B):
+    start_time_strassen = time.time()
+    strassen_mul_result = strassen_mul(matrix_A, matrix_B)
+    end_time_strassen = time.time()
+    execution_time_strassen = end_time_strassen - start_time_strassen
+    time_strassen.append(execution_time_strassen)
+
+
+def run_common(time_common, matrix_A, matrix_B):
+    start_time_common = time.time()
+    common_mul_result = matrix_multuply(matrix_A, matrix_B)
+    end_time_common = time.time()
+    execution_time_common = end_time_common - start_time_common
+    time_common.append(execution_time_common)
+
+
+def run_mulproc(time_mulproc, matrix_A, matrix_B):
+    start_time_mulproc = time.time()
+    strassen_mulproc_res = strassen_mul_mulproc(matrix_A, matrix_B)
+    end_time_mulproc = time.time()
+    execution_time_mulptoc = end_time_mulproc - start_time_mulproc
+    time_mulproc.append(execution_time_mulptoc)
+
+
+def run_threading(time_parallel, matrix_A, matrix_B):
+    start_time_parallel = time.time()
+    strassen_mul_parallel_result = strassen_mul_parallel(matrix_A, matrix_B)
+    end_time_parallel = time.time()
+    execution_time_parallel = end_time_parallel - start_time_parallel
+    time_parallel.append(execution_time_parallel)
+
+
 if __name__ == "__main__":
     sizes = [2, 4, 8, 16, 32, 64, 128]
 
@@ -37,28 +69,9 @@ if __name__ == "__main__":
         matrix_A = np.random.randint(low=0, high=10, size=(size, size))
         matrix_B = np.random.randint(low=0, high=10, size=(size, size))
 
-        start_time_strassen = time.time()
-        strassen_mul_result = strassen_mul(matrix_A, matrix_B)
-        end_time_strassen = time.time()
-        execution_time_strassen = end_time_strassen - start_time_strassen
-        time_strassen.append(execution_time_strassen)
-
-        start_time_common = time.time()
-        common_mul_result = matrix_multuply(matrix_A, matrix_B)
-        end_time_common = time.time()
-        execution_time_common = end_time_common - start_time_common
-        time_common.append(execution_time_common)
-
-        start_time_mulproc = time.time()
-        strassen_mulproc_res = strassen_mul_mulproc(matrix_A, matrix_B)
-        end_time_mulproc = time.time()
-        execution_time_mulptoc = end_time_mulproc - start_time_mulproc
-        time_mulproc.append(execution_time_mulptoc)
-
-        start_time_parallel = time.time()
-        strassen_mul_parallel_result = strassen_mul_parallel(matrix_A, matrix_B)
-        end_time_parallel = time.time()
-        execution_time_parallel = end_time_parallel - start_time_parallel
-        time_parallel.append(execution_time_parallel)
+        run_strassen(time_strassen, matrix_A, matrix_B)
+        run_common(time_common, matrix_A, matrix_B)
+        run_mulproc(time_mulproc, matrix_A, matrix_B)
+        run_threading(time_parallel, matrix_A, matrix_B)
 
     graphic(time_common, time_strassen, time_parallel, time_mulproc)
