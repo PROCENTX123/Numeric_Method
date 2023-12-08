@@ -1,18 +1,19 @@
 import numpy as np
 import time
 from mull_method.common_method import matrix_multuply
-from mull_method.strassen import strassen_mul
+from mull_method.strassen import strassen_mul, strassen_mul_check
 from mull_method.parallel import strassen_mul_parallel
 from mull_method.parallel_mulproc import strassen_mul_mulproc
 import matplotlib.pyplot as plt
 
-def graphic(time_common, time_strassen, time_parallel, time_mulproc):
-    plt.figure(figsize=(8, 6))
+def graphic(time_common, time_strassen, time_parallel, time_mulproc, time_check_all):
+    plt.figure(figsize=(7, 6))
 
     plt.plot(sizes, time_common, label='Common Multiplication', marker='o')
     plt.plot(sizes, time_strassen, label='Strassen Multiplication', marker='o')
-    plt.plot(sizes, time_parallel, label='Parallel Strassen Multiplication', marker='o')
-    plt.plot(sizes, time_mulproc, label='Parallel Strassen Multiprocessing', marker='o')
+    # plt.plot(sizes, time_parallel, label='Parallel Strassen Multiplication', marker='o')
+    # plt.plot(sizes, time_mulproc, label='Parallel Strassen Multiprocessing', marker='o')
+
 
     plt.grid(True, linestyle='--', alpha=0.7)
 
@@ -38,15 +39,15 @@ def run_common(time_common, matrix_A, matrix_B):
     end_time_common = time.time()
     execution_time_common = end_time_common - start_time_common
     time_common.append(execution_time_common)
+    return common_mul_result
 
-
-def run_mulproc(time_mulproc, matrix_A, matrix_B):
+def run_mulproc(time_mulproc, matrix_A, matrix_B, size):
     start_time_mulproc = time.time()
-    strassen_mulproc_res = strassen_mul_mulproc(matrix_A, matrix_B)
+    strassen_mulproc_res = strassen_mul_mulproc(matrix_A, matrix_B, num_processes=2, size=size)
     end_time_mulproc = time.time()
     execution_time_mulptoc = end_time_mulproc - start_time_mulproc
     time_mulproc.append(execution_time_mulptoc)
-
+    return strassen_mulproc_res
 
 def run_threading(time_parallel, matrix_A, matrix_B):
     start_time_parallel = time.time()
@@ -57,12 +58,20 @@ def run_threading(time_parallel, matrix_A, matrix_B):
 
 
 if __name__ == "__main__":
-    sizes = [2, 4, 8, 16, 32, 64, 128]
+
+    sizes = [4, 8, 16, 32, 64, 128, 256, 512]
+    check = [2, 4, 8, 16, 32, 64]
 
     time_common = []
     time_strassen = []
     time_parallel = []
     time_mulproc = []
+    time_check_all = {2: [],
+                      4: [],
+                      8: [],
+                      16: [],
+                      32: [],
+                      64: []}
 
     for size in sizes:
 
@@ -71,7 +80,14 @@ if __name__ == "__main__":
 
         run_strassen(time_strassen, matrix_A, matrix_B)
         run_common(time_common, matrix_A, matrix_B)
-        run_mulproc(time_mulproc, matrix_A, matrix_B)
-        run_threading(time_parallel, matrix_A, matrix_B)
+        # for to_common in check:
+        #     if to_common < size:
+        #         start_time = time.time()
+        #         strassen_mul_check(matrix_A, matrix_B, to_common)
+        #         execution_time = time.time() - start_time
+        #         time_check_all[to_common].append(execution_time)
+        # run_mulproc(time_mulproc, matrix_A, matrix_B, size)
+        # run_threading(time_parallel, matrix_A, matrix_B)
 
-    graphic(time_common, time_strassen, time_parallel, time_mulproc)
+
+    graphic(time_common, time_strassen, time_parallel, time_mulproc, time_check_all)

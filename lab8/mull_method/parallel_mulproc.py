@@ -1,56 +1,28 @@
-from multiprocessing import Process, Queue
+from multiprocessing import Pool
+import numpy as np
 
-def add(A, B):
-    return [[A[i][j] + B[i][j] for j in range(len(A[0]))] for i in range(len(A))]
+def multiply_submatrices(args):
 
-def sub(A, B):
-    return [[A[i][j] - B[i][j] for j in range(len(A[0]))] for i in range(len(A))]
+    sub_A, sub_B = args
 
-def split_matrix(matrix):
-    size = len(matrix)
-    mid = size // 2
-    a11 = [row[:mid] for row in matrix[:mid]]
-    a12 = [row[mid:] for row in matrix[:mid]]
-    a21 = [row[:mid] for row in matrix[mid:]]
-    a22 = [row[mid:] for row in matrix[mid:]]
-    return a11, a12, a21, a22
+    return np.dot(sub_A, sub_B)
 
-def strassen_mul_helper(A, B, queue):
-    result = strassen_mul_mulproc(A, B)
-    queue.put(result)
+def strassen_mul_mulproc(A, B, num_processes, size):
+    submatrices = []
 
-def strassen_mul_mulproc(A, B):
-    if len(A) == 1:
-        return [[A[0][0] * B[0][0]]]
+    n = len(A)
+    mid = n // num_processes
 
-    a11, a12, a21, a22 = split_matrix(A)
-    b11, b12, b21, b22 = split_matrix(B)
+    for i in range(num_processes):
+        for j in range(num_processes):
+            sub_A = A[i * mid: (i + 1) * mid, j * mid: (j + 1) * mid]
+            sub_B = B[i * mid: (i + 1) * mid, j * mid: (j + 1) * mid]
+            submatrices.append((sub_A, sub_B))
 
-    queue = Queue()
+    with Pool(num_processes * num_processes) as pool:
+        results = pool.map(multiply_submatrices, submatrices)
 
-    processes = []
+    result_blocks = [[results[i * num_processes + j] for j in range(num_processes)] for i in range(num_processes)]
+    result = np.block(result_blocks)
 
-    processes.append(Process(target=strassen_mul_helper, args=(add(a11, a22), add(b11, b22), queue)))
-    processes.append(Process(target=strassen_mul_helper, args=(add(a21, a22), b11, queue)))
-    processes.append(Process(target=strassen_mul_helper, args=(a11, sub(b12, b22), queue)))
-    processes.append(Process(target=strassen_mul_helper, args=(a22, sub(b21, b11), queue)))
-    processes.append(Process(target=strassen_mul_helper, args=(add(a11, a12), b22, queue)))
-    processes.append(Process(target=strassen_mul_helper, args=(sub(a21, a11), add(b11, b12), queue)))
-    processes.append(Process(target=strassen_mul_helper, args=(sub(a12, a22), add(b21, b22), queue)))
-
-    for process in processes:
-        process.start()
-
-    for process in processes:
-        process.join()
-
-    p1, p2, p3, p4, p5, p6, p7 = [queue.get() for _ in range(7)]
-
-    c11 = add(sub(add(p1, p4), p5), p7)
-    c12 = add(p3, p5)
-    c21 = add(p2, p4)
-    c22 = add(sub(add(p1, p3), p2), p6)
-
-    result = c11 + c12 + c21 + c22
     return result
-
