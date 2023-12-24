@@ -161,54 +161,7 @@ class Matrix:
 
         return Vector(x)
 
-    # def gauss_permutation_row_and_colon(self, vector):
-    #     n = vector.size()
-    #     matrix = np.array(copy.deepcopy(self.grid), dtype=float)
-    #     vector = np.array(copy.deepcopy(vector.value), dtype=float)
-    #     x = np.zeros(n, dtype=float)
-    #     perm = [i for i in range(n)]
-    #
-    #     for i in range(n):
-    #         max_index_str = i
-    #         for j in range(i + 1, n):
-    #             if abs(matrix[j][i]) > abs(matrix[max_index_str][i]):
-    #                 max_index_str = j
-    #
-    #         max_index_col = i
-    #         for j in range(i + 1, n):
-    #             if abs(matrix[i][j]) > abs(matrix[i][max_index_col]):
-    #                 max_index_col = j
-    #
-    #         if max_index_str != i or max_index_col != i:
-    #
-    #             if max_index_str > max_index_col:
-    #                 for k in range(n):
-    #                     matrix[i][k], matrix[max_index_str][k] = matrix[max_index_str][k], matrix[i][k]
-    #                 vector[i], vector[max_index_str] = vector[max_index_str], vector[i]
-    #
-    #             else:
-    #                 for k in range(n):
-    #                     matrix[k][i], matrix[k][max_index_col] = matrix[max_index_col][k], matrix[k][i]
-    #                 perm[i], perm[max_index_col] = perm[max_index_col], perm[i]
-    #
-    #         for j in range(i + 1, n):
-    #             factor = matrix[j][i] / matrix[i][i]
-    #             for k in range(i, n):
-    #                 if k != i:
-    #                     matrix[j][k] -= factor * matrix[i][k]
-    #             vector[j] -= factor * vector[i]
-    #
-    #     x1 = np.zeros(n)
-    #     for i in range(n - 1, -1, -1):
-    #         x1[i] = vector[i]
-    #         for j in range(n - 1, i, -1):
-    #             x1[i] -= x1[j] * matrix[i][j]
-    #         x1[i] /= matrix[i][i]
-    #
-    #     for i in range(n):
-    #         x[perm[i]] = x1[i]
-    #
-    #     return Vector(x)
+
 
     def gauss_permutation_row_and_colon(self, vector):
         n = vector.size()

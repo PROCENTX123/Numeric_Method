@@ -22,9 +22,9 @@ if __name__ == "__main__":
     print(m1 * v1)
 
 
-    # func = input()
-    # us_func = lambda x: eval(func)
-    # draw(us_func, -5, 5)
+    func = input()
+    us_func = lambda x: eval(func)
+    draw(us_func, -5, 5)
 
     calc_inaccuracy(7/5)
     calc_inaccuracy(17/12)

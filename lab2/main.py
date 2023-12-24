@@ -15,5 +15,5 @@ if __name__ == "__main__":
 
     x_bibil = Vector(list(np.linalg.solve(copy.deepcopy(m2.grid), copy.deepcopy(b.value))))
 
-    print((v1.sub(x_chisl)).normalize())
-    print((v1.sub(x_bibil)).normalize())
+    print('x_chisl error:', (v1.sub(x_chisl)).normalize())
+    print('x_bibl error:', (v1.sub(x_bibil)).normalize())
