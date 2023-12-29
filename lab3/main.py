@@ -2,6 +2,7 @@ from Matrix import Matrix
 from Vector import Vector
 from Graph import graph
 
+
 def generate_matrix_and_vectors(matrix_vectors, size, left_border, right_border, diagonal_value):
     matrix = []
     vectors = []
@@ -23,6 +24,7 @@ def generate_matrix_and_vectors(matrix_vectors, size, left_border, right_border,
 
     return matrix, vectors, trues, diagonal_demos
 
+
 def get_input():
 
     matrix_vectors = int(input("Введите количество матриц и векторов: "))
@@ -34,8 +36,8 @@ def get_input():
 
     return matrix_vectors, size, left_border, right_border, left_border_diagonal, right_border_diagonal
 
+
 if __name__ == "__main__":
-    # m1 = Matrix.input(3)
 
     matrix_vectors, size, left_border, right_border, left_border_diagonal, right_border_diagonal = get_input()
 

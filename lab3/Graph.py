@@ -39,4 +39,4 @@ def graph(matrix: [Matrix], vectors:[Vector], trues, diagonal_demos):
     plt.ylabel('Error')
 
     plt.legend()
-    plt.savefig("Graph1.png")
+    plt.savefig("Graph2.png")

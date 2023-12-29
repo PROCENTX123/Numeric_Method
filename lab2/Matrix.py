@@ -70,7 +70,6 @@ class Matrix:
             raise ValueError("Введены могут быть только матрицы или векторы")
 
 
-
     def gauss(self, vector):
         n = vector.size()
         matrix = [row + [vector.value[i]] for i, row in enumerate(self.grid)]

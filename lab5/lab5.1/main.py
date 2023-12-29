@@ -1,6 +1,9 @@
 from typing import List
 
-def jacobi_iteration(A: List[List[float]], b: List[float], x: List[float]) -> List[float]:
+
+def jacobi_iteration(A: List[List[float]],
+                     b: List[float],
+                     x: List[float]) -> List[float]:
     n = len(A)
     x_new = [0.0] * n
     for i in range(n):
@@ -8,7 +11,12 @@ def jacobi_iteration(A: List[List[float]], b: List[float], x: List[float]) -> Li
         x_new[i] = (b[i] - sum_val) / A[i][i]
     return x_new
 
-def jacobi(A: List[List[float]], b: List[float], x0: List[float], tol: float, max_iter: int) -> List[float]:
+
+def jacobi(A: List[List[float]],
+           b: List[float],
+           x0: List[float],
+           tol: float,
+           max_iter: int) -> List[float]:
     n = len(A)
     x = x0.copy()
     iterate = 0
@@ -26,7 +34,9 @@ def jacobi(A: List[List[float]], b: List[float], x0: List[float], tol: float, ma
 
     return x
 
-def gaussian_elimination(A: List[List[float]], b: List[float]) -> List[float]:
+
+def gaussian_elimination(A: List[List[float]],
+                         b: List[float]) -> List[float]:
     n = len(A)
     for i in range(n):
         max_row = i
@@ -51,7 +61,6 @@ def gaussian_elimination(A: List[List[float]], b: List[float]) -> List[float]:
     return x
 
 if __name__ == "__main__":
-    # Пробные входные данные
     A = [
         [4, -1, 0, 0],
         [-1, 4, -1, 0],
@@ -61,21 +70,20 @@ if __name__ == "__main__":
     b = [15, 10, 10, 10]
     x0 = [0, 0, 0, 0]
 
-    # Решение методом Якоби
-    sol_jac = jacobi(A, b, x0, 1e-6, 1000)
 
-    # Решение методом Гаусса
+    sol_jac = jacobi(A, b, x0, 1e-6, 1000)
     sol_gauss = gaussian_elimination(A, b)
+
 
     print('Ответ используя метод Якоби: ')
     print(sol_jac)
     print('Ответ используя метод Гаусса: ')
     print(sol_gauss)
 
-    # Проверка того, что результаты методов отличаются меньше чем на эпсилон
+
     print("Сравнение методов:", all(abs(sol_jac[i] - sol_gauss[i]) < 1e-6 for i in range(len(sol_jac))))
 
-    # Проверка на диагональное преобладание
+
     diagonal_dom = all(
         abs(A[i][i]) > sum(
             abs(A[i][j]) for j in range(len(A[i])) if j != i

@@ -17,4 +17,4 @@ def draw(func, start, end, step=0.1):
     plt.ylabel('y')
     plt.title('График функции')
     plt.grid(True)
-    plt.show()
+    plt.savefig('my_plot.png')
